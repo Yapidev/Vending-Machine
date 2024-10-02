@@ -16,7 +16,7 @@ void main() {
         printf("|   (Rp 4000) |   (Rp 5000)   |  (Rp 9000) |\n");
         printf("|  (Kode: 101)|  (Kode: 102)  | (Kode: 103)|\n");
         printf("+------------------------------------------+\n");
-        printf("|   Ciki Cik  |    Doritos    |  Chisato   |\n");
+        printf("|  Ciki Ciki  |    Doritos    |  Chisato   |\n");
         printf("|  (Rp 4000)  |   (Rp 5000)   | (Rp 10000) |\n");
         printf("| (Kode: 201) |  (Kode: 202)  | (Kode: 203)|\n");
         printf("+------------------------------------------+\n");
@@ -40,8 +40,8 @@ void main() {
                 harga = 9000;  // Set harga jika Mizon dipilih
                 break;
             case 201:
-                printf("Anda memilih Ciki Cik. Harga: Rp4000\n");
-                harga = 4000;  // Set harga jika Ciki Cik dipilih
+                printf("Anda memilih Ciki Ciki. Harga: Rp4000\n");
+                harga = 4000;  // Set harga jika Ciki Ciki dipilih
                 break;
             case 202:
                 printf("Anda memilih Doritos. Harga: Rp5000\n");
