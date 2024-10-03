@@ -3,11 +3,15 @@
 // Fungsi utama program
 void main() {
     // Deklarasi variabel untuk kode produk, uang, harga, metode pembayaran, dan opsi beli lagi
-    int kode, uang, harga = 0, metode;
+    int kode, uang, harga = 0, metode, totalUang;
     char beliLagi;
 
     // Mulai menampilkan menu
     do {
+        // Reset nilai variable totalUang dan harga
+        totalUang = 0;
+        harga = 0;
+
         // Opening: Menampilkan menu produk
         printf("+------------------------------------------+\n");
         printf("|           VENDING MACHINE CERIA          |\n");
@@ -68,18 +72,19 @@ void main() {
             do {
                 printf("Masukkan uang Anda: ");
                 scanf("%d", &uang);
+                totalUang += uang;
 
                 // Cek apakah uang cukup
-                if (uang < harga) {
-                    printf("Uang tidak cukup. Anda masih membutuhkan Rp%d lagi.\n", harga - uang);
+                if (totalUang < harga) {
+                    printf("Uang tidak cukup. Anda masih membutuhkan Rp%d lagi.\n", harga - totalUang);
                 }
-            } while (uang < harga);  // Ulangi sampai uang cukup
+            } while (totalUang < harga);  // Ulangi sampai uang cukup
             
             // Proses transaksi tunai
-            if (uang == harga) {
+            if (totalUang == harga) {
                 printf("Uang pas. Terima kasih telah berbelanja!\n");
             } else {
-                int kembalian = uang - harga; // Hitung kembalian
+                int kembalian = totalUang - harga; // Hitung kembalian
                 printf("Terima kasih telah berbelanja! Kembalian Anda: Rp%d\n", kembalian);
             }
         } 
@@ -111,21 +116,22 @@ void main() {
             printf("Silakan lakukan pembayaran sebesar Rp%d dengan QRIS.\n", harga);
 
             // Input pembayaran QRIS
-                        do {
+                do {
                 printf("Masukkan uang Anda: ");
                 scanf("%d", &uang);
+                totalUang += uang;
 
                 // Cek apakah uang cukup
-                if (uang < harga) {
+                if (totalUang < harga) {
                     printf("Uang tidak cukup. Anda masih membutuhkan Rp%d lagi.\n", harga - uang);
                 }
-            } while (uang < harga);  // Ulangi sampai uang cukup
+            } while (totalUang < harga);  // Ulangi sampai uang cukup
             
             // Proses transaksi tunai
-            if (uang == harga) {
+            if (totalUang == harga) {
                 printf("Uang pas. Terima kasih telah berbelanja!\n");
             } else {
-                int kembalian = uang - harga; // Hitung kembalian
+                int kembalian = totalUang - harga; // Hitung kembalian
                 printf("Terima kasih telah berbelanja! Kembalian Anda: Rp%d\n", kembalian);
             }
         } 
