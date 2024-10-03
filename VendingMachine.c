@@ -8,6 +8,9 @@ void main() {
 
     // Mulai menampilkan menu
     do {
+        // Label start
+        start:
+        
         // Reset nilai variable totalUang dan harga
         totalUang = 0;
         harga = 0;
@@ -56,8 +59,10 @@ void main() {
                 harga = 10000; // Set harga jika Chisato dipilih
                 break;
             default:
-                printf("Kode yang dimasukkan tidak valid!\n");
-                break;  // Jika kode tidak valid, keluar dari switch
+                printf("Kode yang dimasukkan tidak valid!\n\n\n");
+
+                // Kembali ke label start
+                goto start;
         }
 
         // Pilih metode pembayaran
