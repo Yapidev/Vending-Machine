@@ -83,8 +83,9 @@ void main() {
                 printf("Terima kasih telah berbelanja! Kembalian Anda: Rp%d\n", kembalian);
             }
         } 
+        
         // Pembayaran menggunakan QRIS
-        else if (metode == 2) {
+        if (metode == 2) {
             printf("\n=============== QRIS Payment ===============\n");
             printf("|                                          |\n");
             printf("|      ##############################      |\n");
@@ -108,10 +109,26 @@ void main() {
 
             // Informasi pembayaran QRIS
             printf("Silakan lakukan pembayaran sebesar Rp%d dengan QRIS.\n", harga);
-            printf("Terima kasih telah berbelanja!\n");
-        } else {
-            printf("Metode pembayaran tidak valid.\n");
-        }
+
+            // Input pembayaran QRIS
+                        do {
+                printf("Masukkan uang Anda: ");
+                scanf("%d", &uang);
+
+                // Cek apakah uang cukup
+                if (uang < harga) {
+                    printf("Uang tidak cukup. Anda masih membutuhkan Rp%d lagi.\n", harga - uang);
+                }
+            } while (uang < harga);  // Ulangi sampai uang cukup
+            
+            // Proses transaksi tunai
+            if (uang == harga) {
+                printf("Uang pas. Terima kasih telah berbelanja!\n");
+            } else {
+                int kembalian = uang - harga; // Hitung kembalian
+                printf("Terima kasih telah berbelanja! Kembalian Anda: Rp%d\n", kembalian);
+            }
+        } 
 
         // Tanyakan apakah ingin membeli lagi
         printf("\nApakah Anda ingin membeli lagi? (y/n): ");
