@@ -1,38 +1,32 @@
 #include <stdio.h>
 #include <time.h>
 
-// Fungsi untuk menentukan harga dan nama produk berdasarkan kode produk
-void pilihProduk(int kode, int *harga, const char **namaProduk) {
-    switch (kode) {
-        case 101:
-            *namaProduk = "Aquah";
-            *harga = 4000;
-            break;
-        case 102:
-            *namaProduk = "Teh Pucuk";
-            *harga = 5000;
-            break;
-        case 103:
-            *namaProduk = "Mizon";
-            *harga = 9000;
-            break;
-        case 201:
-            *namaProduk = "Ciki Ciki";
-            *harga = 4000;
-            break;
-        case 202:
-            *namaProduk = "Doritos";
-            *harga = 5000;
-            break;
-        case 203:
-            *namaProduk = "Chisato";
-            *harga = 10000;
-            break;
-        default:
-            *namaProduk = "Tidak valid";
-            *harga = 0;
-            printf("Kode yang dimasukkan tidak valid!\n\n");
+// Struktur untuk menyimpan informasi produk
+typedef struct {
+    int kode;
+    const char *nama;
+    int harga;
+} Produk;
+
+// Daftar produk yang tersedia
+Produk daftarProduk[] = {
+    {101, "Aquah", 4000},
+    {102, "Teh Pucuk", 5000},
+    {103, "Mizon", 9000},
+    {201, "Ciki Ciki", 4000},
+    {202, "Doritos", 5000},
+    {203, "Chisato", 8000}
+};
+int jumlahProduk = sizeof(daftarProduk) / sizeof(daftarProduk[0]);
+
+// Fungsi untuk mendapatkan pointer produk berdasarkan kode
+Produk* pilihProduk(int kode) {
+    for (int i = 0; i < jumlahProduk; i++) {
+        if (daftarProduk[i].kode == kode) {
+            return &daftarProduk[i];
+        }
     }
+    return NULL; // Produk tidak ditemukan
 }
 
 // Fungsi untuk menampilkan menu produk
@@ -40,13 +34,9 @@ void tampilkanMenu() {
     printf("+------------------------------------------+\n");
     printf("|           VENDING MACHINE CERIA          |\n");
     printf("+------------------------------------------+\n");
-    printf("|    Aquah    |   Teh Pucuk   |    Mizon   |\n");
-    printf("|   (Rp 4000) |   (Rp 5000)   |  (Rp 9000) |\n");
-    printf("|  (Kode: 101)|  (Kode: 102)  | (Kode: 103)|\n");
-    printf("+------------------------------------------+\n");
-    printf("|  Ciki Ciki  |    Doritos    |  Chisato   |\n");
-    printf("|  (Rp 4000)  |   (Rp 5000)   | (Rp 10000) |\n");
-    printf("| (Kode: 201) |  (Kode: 202)  | (Kode: 203)|\n");
+    for (int i = 0; i < jumlahProduk; i++) {
+        printf("| %-11s | (Rp %d) | (Kode: %d)    |\n", daftarProduk[i].nama, daftarProduk[i].harga, daftarProduk[i].kode);
+    }
     printf("+------------------------------------------+\n");
 }
 
@@ -94,7 +84,7 @@ void pembayaranQRIS(int harga, int *kembalian) {
     printf("|    Scan kode ini menggunakan aplikasi    |\n");
     printf("|     pembayaran QRIS untuk melanjutkan    |\n");
     printf("============================================\n\n");
-
+    
     printf("Silakan lakukan pembayaran sebesar Rp%d dengan QRIS.\n", harga);
 
     do {
@@ -119,13 +109,9 @@ void pembayaranQRIS(int harga, int *kembalian) {
 void rekapPembelian(const char *namaProduk, int kode, int harga, int metode, const char *status, int kembalian) {
     FILE *file = fopen("rekap_pembelian.txt", "a");
     
-    // Jika file gagal dibuka, coba buat file baru
     if (file == NULL) {
-        file = fopen("rekap_pembelian.txt", "w");
-        if (file == NULL) {
-            printf("Gagal membuat file untuk rekap pembelian.\n");
-            return;
-        }
+        printf("Gagal membuka file untuk rekap pembelian.\n");
+        return;
     }
 
     // Dapatkan tanggal dan waktu saat ini
@@ -150,14 +136,13 @@ void rekapPembelian(const char *namaProduk, int kode, int harga, int metode, con
     fprintf(file, "------------------------------------------\n");
 
     fclose(file);
-    // printf("Rekap pembelian berhasil dicatat.\n");
 }
 
 // Fungsi utama program
 int main() {
-    int kode, harga, metode, kembalian = 0;
+    int kode, metode, kembalian = 0;
     char beliLagi;
-    const char *namaProduk;
+    Produk *produk;
 
     do {
         tampilkanMenu();
@@ -170,10 +155,11 @@ int main() {
             break;
         }
 
-        // Tentukan nama produk dan harga berdasarkan kode
-        pilihProduk(kode, &harga, &namaProduk);
-        if (harga == 0) {
-            rekapPembelian("Tidak valid", kode, harga, 0, "Batal", 0);
+        // Cari produk berdasarkan kode
+        produk = pilihProduk(kode);
+        if (produk == NULL) {
+            rekapPembelian("Tidak valid", kode, 0, 0, "Batal", 0);
+            printf("Kode yang dimasukkan tidak valid!\n\n");
             continue;
         }
 
@@ -185,13 +171,13 @@ int main() {
         scanf("%d", &metode);
 
         if (metode == 1) {
-            pembayaranTunai(harga, &kembalian);
-            rekapPembelian(namaProduk, kode, harga, metode, "Sukses", kembalian);
+            pembayaranTunai(produk->harga, &kembalian);
+            rekapPembelian(produk->nama, produk->kode, produk->harga, metode, "Sukses", kembalian);
         } else if (metode == 2) {
-            pembayaranQRIS(harga, &kembalian);
-            rekapPembelian(namaProduk, kode, harga, metode, "Sukses", kembalian);
+            pembayaranQRIS(produk->harga, &kembalian);
+            rekapPembelian(produk->nama, produk->kode, produk->harga, metode, "Sukses", kembalian);
         } else if (metode == 3) {
-            rekapPembelian(namaProduk, kode, harga, metode, "Batal", 0);
+            rekapPembelian(produk->nama, produk->kode, produk->harga, metode, "Batal", 0);
             continue;
         } else {
             printf("Metode pembayaran tidak valid!\n");
