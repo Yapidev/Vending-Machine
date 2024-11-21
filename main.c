@@ -138,6 +138,51 @@ void rekapPembelian(const char *namaProduk, int kode, int harga, int metode, con
     fclose(file);
 }
 
+// Fungsi untuk print Analisis Program
+void analisisProgram() {
+    printf("\n========== ANALISIS PROGRAM ==========\n");
+
+    printf("\nTUJUAN PROGRAM:\n");
+
+    printf("Program ini adalah simulasi vending machine digital dengan fitur:\n");
+    printf("1. Melihat daftar produk yang tersedia.\n");
+    printf("2. Memilih produk berdasarkan kode.\n");
+    printf("3. Melakukan pembayaran (Tunai/QRIS).\n");
+    printf("4. Mencatat transaksi ke dalam file teks.\n");
+    printf("5. Memberikan kembalian jika ada.\n");
+    printf("6. Mendukung pembatalan transaksi.\n\n");
+
+    printf("STRUKTUR DATA:\n");
+    printf("- Struktur Produk menyimpan kode, nama, dan harga produk.\n");
+    printf("- Array daftarProduk menyimpan semua produk yang tersedia.\n\n");
+
+    printf("FUNGSI UTAMA:\n");
+    printf("1. pilihProduk(kode):\n");
+    printf("   - Menemukan produk berdasarkan kode.\n");
+    printf("   - Mengembalikan pointer ke produk jika ditemukan.\n");
+    printf("\n2. tampilkanMenu():\n");
+    printf("   - Menampilkan daftar produk dalam format tabel.\n");
+    printf("\n3. pembayaranTunai(harga, *kembalian):\n");
+    printf("   - Mengatur pembayaran tunai, memvalidasi jumlah uang, dan menghitung kembalian.\n");
+    printf("\n4. pembayaranQRIS(harga, *kembalian):\n");
+    printf("   - Mensimulasikan pembayaran QRIS, memvalidasi jumlah uang, dan menghitung kembalian.\n");
+    printf("\n5. rekapPembelian(...):\n");
+    printf("   - Mencatat transaksi ke dalam file rekap_pembelian.txt, termasuk waktu transaksi.\n");
+    printf("\n6. main():\n");
+    printf("   - Mengatur alur utama program, termasuk memilih produk, metode pembayaran, dan pembelian berulang.\n\n");
+
+    printf("KEUNGGULAN:\n");
+    printf("1. Modular: Fungsi-fungsi terpisah mempermudah pemeliharaan.\n");
+    printf("2. Fleksibilitas: Mendukung pembayaran tunai dan QRIS.\n");
+    printf("3. Rekap Transaksi: Setiap transaksi tercatat dalam file untuk referensi.\n");
+
+    printf("\nPOTENSI PENINGKATAN:\n");
+    printf("1. Validasi input non-numerik pada kode produk dan jumlah uang.\n");
+    printf("2. Menambahkan laporan ringkasan pembelian setelah program selesai.\n");
+    printf("3. Penanganan error jika file rekap gagal dibuka.\n");
+    printf("======================================\n");
+}
+
 // Fungsi utama program
 int main() {
     int kode, metode, kembalian = 0;
@@ -188,6 +233,9 @@ int main() {
 
     } while (beliLagi == 'y' || beliLagi == 'Y');
 
-    printf("Terima kasih! Sampai jumpa lagi!\n");
+    printf("\nTerima kasih! Sampai jumpa lagi!\n");
+
+    analisisProgram();
+    
     return 0;
 }
