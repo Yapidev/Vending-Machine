@@ -1,5 +1,9 @@
 #include <stdio.h>
+#include <string.h>
+#include <stdlib.h>
 #include <time.h>
+
+#define MAX_LINE_LENGTH 500
 
 // Struktur untuk menyimpan informasi produk
 typedef struct {
@@ -183,6 +187,56 @@ void analisisProgram() {
     printf("======================================\n");
 }
 
+// Fungsi untuk mengonversi string tanggal ke struktur tm
+struct tm string_to_date(const char *date_str) {
+    struct tm tm_date = {0};
+    
+    // Menggunakan sscanf untuk mengekstrak tanggal dan waktu
+    sscanf(date_str, "%d-%d-%d %d:%d:%d", &tm_date.tm_year, &tm_date.tm_mon, &tm_date.tm_mday,
+    &tm_date.tm_hour, &tm_date.tm_min, &tm_date.tm_sec);
+
+    tm_date.tm_year -= 1900; // Menyesuaikan tahun (tm_year adalah tahun sejak 1900)
+    tm_date.tm_mon -= 1; // Menyesuaikan bulan (tm_mon dimulai dari 0)
+    return tm_date;
+}
+
+int is_this_week(struct tm date) {
+    time_t t = time(NULL);
+    struct tm now = *localtime(&t); // Mengambil waktu saat ini
+
+    struct tm tm_trans = date; // Waktu transaksi
+
+    // Pastikan hari dalam minggu dihitung dengan benar
+    mktime(&tm_trans);  // Menghitung kembali nilai tm_wday dan field lainnya
+
+    // Menghitung waktu dalam bentuk time_t untuk sekarang dan transaksi
+    time_t time1 = mktime(&now); // Konversi waktu sekarang ke time_t
+    time_t time2 = mktime(&tm_trans); // Konversi waktu transaksi ke time_t
+
+    // Menghitung perbedaan waktu dalam detik
+    double diff = difftime(time1, time2);
+    double seconds_in_a_week = 7 * 24 * 60 * 60;
+
+    // Membandingkan apakah perbedaan waktu dalam seminggu terakhir
+    if (diff <= seconds_in_a_week) {
+        return 1; // Jika dalam minggu yang sama
+    } else {
+        return 0; // Jika tidak dalam minggu yang sama
+    }
+}
+
+int is_this_month(struct tm date) {
+    time_t t = time(NULL);
+    struct tm now = *localtime(&t);
+    return now.tm_year == date.tm_year && now.tm_mon == date.tm_mon;
+}
+
+int is_this_year(struct tm date) {
+    time_t t = time(NULL);
+    struct tm now = *localtime(&t);
+    return now.tm_year == date.tm_year;
+}
+
 // Fungsi utama program
 int main() {
     int kode, metode, kembalian = 0;
@@ -200,7 +254,6 @@ int main() {
             break;
         }
 
-        // Cari produk berdasarkan kode
         produk = pilihProduk(kode);
         if (produk == NULL) {
             rekapPembelian("Tidak valid", kode, 0, 0, "Batal", 0);
@@ -236,6 +289,60 @@ int main() {
     printf("\nTerima kasih! Sampai jumpa lagi!\n");
 
     analisisProgram();
-    
+
+    FILE *file = fopen("rekap_pembelian.txt", "r");
+    if (file == NULL) {
+        perror("File tidak ditemukan");
+        return 1;
+    }
+
+    char line[MAX_LINE_LENGTH];
+    double total_week = 0, total_month = 0, total_year = 0;
+    while (fgets(line, sizeof(line), file)) {
+        char date_str[20], product_name[50], payment_method[20], status[20];
+        int product_code, price, change;
+        struct tm transaction_date;
+
+        // Membaca data baris per baris
+        if (sscanf(line, "Tanggal: %19[^\n]", date_str)) {
+            // Convert tanggal ke struct tm
+            transaction_date = string_to_date(date_str);
+        }
+        fgets(line, sizeof(line), file); // Nama Produk
+        fgets(line, sizeof(line), file); // Kode Produk
+        fgets(line, sizeof(line), file); // Harga
+        sscanf(line, "Harga: Rp%d", &price);
+        fgets(line, sizeof(line), file); // Metode Pembayaran
+        fgets(line, sizeof(line), file); // Status Transaksi
+        fgets(line, sizeof(line), file); // Kembalian
+        sscanf(line, "Kembalian: Rp%d", &change);
+        
+        // Memeriksa apakah transaksi minggu ini, bulan ini, atau tahun ini
+        if (is_this_week(transaction_date)) {
+            total_week += price;
+        }
+        if (is_this_month(transaction_date)) {
+            total_month += price;
+        }
+        if (is_this_year(transaction_date)) {
+            total_year += price;
+        }
+
+        // Membaca separator baris
+        fgets(line, sizeof(line), file);
+    }
+
+    fclose(file);
+
+    // Output total pembelian
+    printf("====== PEMBELIAN MINGGU INI ======\n");
+    printf("Total pembelian: Rp%.0f\n\n", total_week);
+
+    printf("====== PEMBELIAN BULAN INI ======\n");
+    printf("Total pembelian: Rp%.0f\n\n", total_month);
+
+    printf("====== PEMBELIAN TAHUN INI ======\n");
+    printf("Total pembelian: Rp%.0f\n", total_year);
+
     return 0;
 }
